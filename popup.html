@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA Context Menu</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Botão de alternar tema -->
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+
+    <!-- Tela de boas-vindas -->
+    <div id="welcome-screen" class="welcome-screen" style="display: none;">
+      <div class="welcome-content">
+        <h1>🎉 Bem-vindo ao IA Context Menu</h1>
+        <p>Transforme textos com inteligência artificial em apenas um clique</p>
+        
+        <div class="welcome-steps">
+          <div class="welcome-step">
+            <span class="step-number">1</span>
+            <span class="step-text">Selecione texto em uma página</span>
+          </div>
+          <div class="welcome-step">
+            <span class="step-number">2</span>
+            <span class="step-text">Clique com o botão direito</span>
+          </div>
+          <div class="welcome-step">
+            <span class="step-number">3</span>
+            <span class="step-text">Escolha uma opção de IA</span>
+          </div>
+        </div>
+        
+        <div class="shortcuts-info">
+          <h3>⚡ Atalhos de Teclado</h3>
+          <div class="shortcut">
+            <kbd>⌘⇧R</kbd> <span>Reescrever texto</span>
+          </div>
+          <div class="shortcut">
+            <kbd>⌘⇧G</kbd> <span>Corrigir gramática</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" id="start-setup">
+          🚀 Começar a Usar
+        </button>
+      </div>
+    </div>
+    
+    <header>
+      <h1>🧠 IA Context Menu</h1>
+      <p class="subtitle">Transforme textos com inteligência artificial</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="config">⚙️ Configuração</button>
+      <button class="tab" data-tab="custom">🪄 Prompt</button>
+      <button class="tab" data-tab="snippets">📋 Snippets</button>
+      <button class="tab" data-tab="history">📜 Histórico</button>
+    </div>
+
+    <!-- Tab: Configuração -->
+    <div class="tab-content active" id="config">
+      <div class="form-group">
+        <label for="apiKey">Chave da API OpenAI:</label>
+        <div class="input-group">
+          <input 
+            type="password" 
+            id="apiKey" 
+            placeholder="sk-..."
+            autocomplete="off"
+          >
+          <button class="toggle-visibility" id="toggleKey">👁️</button>
+        </div>
+        <small class="help-text">
+          <a href="https://platform.openai.com/api-keys" target="_blank">
+            Obter chave da API →
+          </a>
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="model">Modelo:</label>
+        <select id="model">
+          <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Rápido e barato)</option>
+          <option value="gpt-4">GPT-4 (Mais inteligente)</option>
+          <option value="gpt-4-turbo-preview">GPT-4 Turbo (Recomendado)</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" id="saveConfig">
+        💾 Salvar Configurações
+      </button>
+      
+      <div id="api-status" class="api-status" style="display: none;">
+        <span class="status-indicator"></span>
+        <span class="status-text"></span>
+      </div>
+
+      <div class="stats">
+        <h3>📊 Estatísticas de Uso</h3>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <span class="stat-label">Total de usos</span>
+            <span class="stat-value" id="totalUses">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Hoje</span>
+            <span class="stat-value" id="todayUses">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Prompt Customizado -->
+    <div class="tab-content" id="custom">
+      <div class="form-group">
+        <label for="customPrompt">
+          Prompt personalizado:
+          <span id="prompt-counter" class="counter-text">0 caracteres</span>
+        </label>
+        <textarea 
+          id="customPrompt" 
+          rows="5" 
+          placeholder="Ex: Traduza para inglês formal..."
+        ></textarea>
+      </div>
+
+      <div class="selected-text" id="selectedTextPreview" style="display: none;">
+        <strong>Texto selecionado:</strong>
+        <p id="selectedTextContent"></p>
+      </div>
+
+      <button class="btn btn-primary" id="executeCustom" disabled>
+        🚀 Executar Prompt
+      </button>
+
+      <div class="saved-prompts">
+        <h3>💾 Prompts Salvos</h3>
+        <div id="savedPromptsList"></div>
+        <button class="btn btn-secondary btn-small" id="savePrompt">
+          + Salvar prompt atual
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab: Snippets -->
+    <div class="tab-content" id="snippets">
+      <div class="form-group">
+        <label for="snippetName">Nome do Snippet:</label>
+        <input type="text" id="snippetName" placeholder="Ex: Assinatura de Email">
+      </div>
+      
+      <div class="form-group">
+        <label for="snippetContent">Conteúdo:</label>
+        <textarea id="snippetContent" rows="5" placeholder="Escreva o conteúdo do seu snippet aqui..."></textarea>
+      </div>
+      
+      <button class="btn btn-primary" id="saveSnippet">
+        💾 Salvar Snippet
+      </button>
+      
+      <h3 class="section-title">📋 Meus Snippets</h3>
+      <div id="snippetsList" class="snippets-list">
+        <p class="empty-state">Nenhum snippet criado ainda.</p>
+      </div>
+    </div>
+
+    <!-- Tab: Histórico -->
+    <div class="tab-content" id="history">
+      <div class="history-controls">
+        <button class="btn btn-secondary btn-small" id="clearHistory">
+          🗑️ Limpar Histórico
+        </button>
+      </div>
+      <div id="historyList" class="history-list">
+        <p class="empty-state">Nenhum item no histórico ainda.</p>
+      </div>
+    </div>
+
+    <div class="message" id="message"></div>
+    
+    <!-- Modal de Resultado -->
+    <div id="result-modal" class="result-modal">
+      <div class="result-modal-content">
+        <div class="result-modal-header">
+          <h2 id="result-modal-title">✨ Resultado</h2>
+          <button id="close-modal" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="result-modal-body">
+          <div class="result-actions-top">
+            <div class="result-action-buttons">
+              <button id="btn-view-side" class="btn-view active" data-view="side">
+                <span class="icon">⊞</span> Lado a lado
+              </button>
+              <button id="btn-view-original" class="btn-view" data-view="original">
+                <span class="icon">📝</span> Original
+              </button>
+              <button id="btn-view-result" class="btn-view" data-view="result">
+                <span class="icon">✨</span> Resultado
+              </button>
+              <button id="btn-view-diff" class="btn-view" data-view="diff">
+                <span class="icon">≠</span> Diferenças
+              </button>
+            </div>
+            <div class="format-actions">
+              <button id="toggle-word-wrap" class="format-btn" title="Quebra de linha">
+                <span class="icon">↩️</span>
+              </button>
+              <button id="increase-font" class="format-btn" title="Aumentar fonte">
+                <span class="icon">A+</span>
+              </button>
+              <button id="decrease-font" class="format-btn" title="Diminuir fonte">
+                <span class="icon">A-</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="result-comparison" id="result-view-container">
+            <div class="result-original">
+              <h3>📝 Texto Original</h3>
+              <div id="original-text" class="text-content"></div>
+            </div>
+            <div class="result-transformed">
+              <h3>✨ Texto Transformado</h3>
+              <div id="transformed-text" class="text-content"></div>
+            </div>
+          </div>
+
+          <div id="result-diff-view" class="result-diff" style="display: none;">
+            <h3>≠ Diferenças</h3>
+            <div id="diff-content" class="text-content diff-content"></div>
+          </div>
+          
+          <div class="result-modal-actions">
+            <button id="copy-result" class="btn btn-primary">
+              📋 Copiar Resultado
+            </button>
+            <button id="apply-replace" class="btn btn-primary">
+              ✏️ Substituir Original
+            </button>
+            <button id="save-to-history" class="btn btn-secondary">
+              💾 Salvar no Histórico
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 
